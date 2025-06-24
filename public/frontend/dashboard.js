@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const user = JSON.parse(localStorage.getItem('user'));
 
   if (!token || !user) {
-      window.location.href = 'index.html';
+      window.location.href = '/login';
       return;
   }
 
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('user-greeting').textContent = `Halo, ${user.name}!`;
   if (user.role === 'admin') {
       document.getElementById('dashboard-title').textContent = 'All Tasks';
-      const adminButton = `<a href="admin.html" class="btn btn-outline-success btn-sm me-2"><i class="bi bi-person-gear"></i> Admin Page</a>`;
+      const adminButton = `<a href="/dashboard/admin" class="btn btn-outline-success btn-sm me-2"><i class="bi bi-person-gear"></i> Admin Page</a>`;
       document.getElementById('logout-button').insertAdjacentHTML('beforebegin', adminButton);
   }
 
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function logout() {
       localStorage.clear();
-      window.location.href = 'index.html';
+      window.location.href = '/login';
   }
 
   document.getElementById('logout-button').addEventListener('click', logout);

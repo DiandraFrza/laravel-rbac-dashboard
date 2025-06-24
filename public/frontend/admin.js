@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Pengecekan paling penting: kalau bukan admin, tendang!
   if (!token || !user || user.role !== 'admin') {
       alert('Akses ditolak. Anda bukan Admin.');
-      window.location.href = 'dashboard.html';
+      window.location.href = '/dashboard';
       return; // Hentikan eksekusi script
   }
 

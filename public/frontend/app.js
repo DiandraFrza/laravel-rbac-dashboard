@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
               localStorage.setItem('access_token', result.access_token);
               localStorage.setItem('user', JSON.stringify(result.user));
 
-              window.location.href = 'dashboard.html';
+              window.location.href = '/dashboard';
 
           } else {
               errorDiv.textContent = result.message || 'Terjadi kesalahan.';
