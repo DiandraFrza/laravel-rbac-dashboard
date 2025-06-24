@@ -20,6 +20,10 @@ class Task extends Model
         'created_by',
     ];
 
+    public function isOverdue(): bool
+    {
+        return $this->status !== 'done' && $this->due_date < now()->toDateString();
+    }
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

@@ -3,14 +3,15 @@
 namespace Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
 class AuthenticationTest extends TestCase
 {
-    use RefreshDatabase; 
+    use RefreshDatabase;
+    #[Test] 
     public function test_user_can_login_and_get_token(): void
     {
         $this->seed();
@@ -35,7 +36,7 @@ class AuthenticationTest extends TestCase
             ]
         ]);
     }
-
+    #[Test]
     public function test_user_cannot_access_protected_route_without_token(): void
     {
         // Coba akses /api/user tanpa login/token
@@ -43,7 +44,7 @@ class AuthenticationTest extends TestCase
 
         $response->assertStatus(401);
     }
-
+    #[Test]
     public function test_user_can_access_protected_route_with_token(): void
     {
         $user = User::factory()->create();

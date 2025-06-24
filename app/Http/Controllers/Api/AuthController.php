@@ -27,6 +27,8 @@ class AuthController extends Controller
         // Kalau berhasil, ambil data user
         $user = User::where('email', $request->email)->first();
 
+        $user->tokens()->delete();
+            
         // Buat token baru
         $token = $user->createToken('auth_token')->plainTextToken;
 

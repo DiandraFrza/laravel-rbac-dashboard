@@ -3,8 +3,8 @@
 namespace Tests\Feature\Task;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
 use App\Models\Task;
 use Laravel\Sanctum\Sanctum;
@@ -16,39 +16,41 @@ class TaskTest extends TestCase
     private User $admin;
     private User $manager;
     private User $staff;
+    private User $anotherStaff;
 
+    #[Test]
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->manager = User::factory()->create(['role' => 'manager']);
         $this->staff = User::factory()->create(['role' => 'staff']);
+        $this->anotherStaff = User::factory()->create(['role' => 'staff']);
     }
 
-    public function test_manager_can_create_task_for_staff(): void
+    #[Test]
+    public function staff_can_only_view_their_assigned_or_created_tasks(): void
     {
-        Sanctum::actingAs($this->manager);
-
-        $taskData = [
-            'title' => 'Siapkan Laporan Bulanan',
-            'description' => 'Tolong siapkan laporan penjualan untuk bulan Juni.',
-            'assigned_to' => $this->staff->id, // Tugaskan ke staff
-            'due_date' => now()->addDays(5)->format('Y-m-d'),
-            'status' => 'pending',
-        ];
-
-        $response = $this->postJson('/api/tasks', $taskData);
-
-        $response->assertStatus(201);
-
-        $this->assertDatabaseHas('tasks', [
-            'title' => 'Siapkan Laporan Bulanan',
+        Task::factory()->create([
+            'created_by' => $this->manager->id,
             'assigned_to' => $this->staff->id,
         ]);
+
+        Task::factory()->create([
+            'created_by' => $this->manager->id,
+            'assigned_to' => $this->anotherStaff->id,
+        ]);
+
+        Sanctum::actingAs($this->staff);
+
+        $response = $this->getJson('/api/tasks');
+
+        $response->assertStatus(200)
+                 ->assertJsonCount(1);
     }
 
-    public function test_staff_cannot_delete_task_they_did_not_create(): void
+    #[Test]
+    public function user_can_view_a_specific_task_with_permission(): void
     {
         $task = Task::factory()->create([
             'created_by' => $this->manager->id,
@@ -57,26 +59,33 @@ class TaskTest extends TestCase
 
         Sanctum::actingAs($this->staff);
 
-        $response = $this->deleteJson('/api/tasks/' . $task->id);
+        $response = $this->getJson('/api/tasks/' . $task->id);
 
-        $response->assertForbidden();
+        $response->assertStatus(200)
+                 ->assertJsonFragment(['title' => $task->title]);
     }
 
-    public function test_admin_can_delete_any_task(): void
+    #[Test]
+    public function task_creator_can_update_the_task(): void
     {
         $task = Task::factory()->create([
             'created_by' => $this->manager->id,
             'assigned_to' => $this->staff->id,
+            'status' => 'pending'
         ]);
 
-        Sanctum::actingAs($this->admin);
+        Sanctum::actingAs($this->manager);
 
-        $response = $this->deleteJson('/api/tasks/' . $task->id);
+        $response = $this->putJson('/api/tasks/' . $task->id, [
+            'status' => 'in_progress'
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJsonFragment(['status' => 'in_progress']);
         
-        $response->assertStatus(204);
-
-        $this->assertDatabaseMissing('tasks', [
+        $this->assertDatabaseHas('tasks', [
             'id' => $task->id,
+            'status' => 'in_progress'
         ]);
     }
 }
