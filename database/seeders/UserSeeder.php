@@ -40,7 +40,6 @@ class UserSeeder extends Seeder
             'status' => true,
         ]);
 
-        // Buat User Staff Aktif
         User::create([
             'name' => 'Staff User Active',
             'email' => 'staff@test.com',
