@@ -34,7 +34,7 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-# Konfigurasi .env (DB, Mail, dll)
+# Konfigurasi .env (DB, dll)
 ```bash
 php artisan migrate --seed
 ```
