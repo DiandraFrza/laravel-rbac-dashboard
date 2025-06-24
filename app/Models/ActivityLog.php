@@ -10,5 +10,11 @@ class ActivityLog extends Model
 {
     use HasFactory, HasUuids;
 
-    public $timestamps = false; 
+    public $timestamps = false;
+
+    protected $fillable = [
+        'user_id',
+        'action',
+        'description',
+    ];
 }
