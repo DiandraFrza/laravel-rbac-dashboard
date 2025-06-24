@@ -35,7 +35,7 @@ php artisan key:generate
 ```
 
 # Konfigurasi .env (DB, Mail, dll)
-``bash
+```bash
 php artisan migrate --seed
 ```
 ```bash
