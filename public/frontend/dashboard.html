@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard - Task Manager</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    body {
+      background-color: #1a1a1a;
+    }
+
+    .task-card {
+      background-color: #2b2b2b;
+      border: 1px solid #444;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .task-card:hover {
+      transform: translateY(-5px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <i class="bi bi-kanban-fill"></i>
+        Task Manager
+      </a>
+      <div>
+        <span class="navbar-text me-3" id="user-greeting">
+        </span>
+        <button class="btn btn-outline-danger btn-sm" id="logout-button">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 id="dashboard-title">My Tasks</h2>
+      <button class="btn btn-primary" id="create-task-btn" data-bs-toggle="modal" data-bs-target="#taskModal">
+        <i class="bi bi-plus-circle-fill"></i> Create New Task
+      </button>
+    </div>
+
+    <div id="task-list" class="row g-3">
+    </div>
+  </main>
+
+  <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="taskModalLabel">Create New Task</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="taskForm">
+            <input type="hidden" id="taskId">
+            <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+              <input type="text" class="form-control" id="title" required>
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" rows="3"></textarea>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="due_date" class="form-label">Due Date</label>
+                <input type="date" class="form-control" id="due_date" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status">
+                  <option value="pending">Pending</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="done">Done</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="assigned_to" class="form-label">Assign To</label>
+              <select class="form-select" id="assigned_to" required>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="saveTaskButton">Save Task</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+
+</html>

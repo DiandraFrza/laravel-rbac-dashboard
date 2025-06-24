@@ -6,10 +6,11 @@ use Illuminate\Console\Command;
 use App\Models\Task;
 use App\Models\ActivityLog;
 use App\Models\User;
-use Carbon\Carbon; // Tanggal
+use Carbon\Carbon; 
 
 class CheckOverdueTasks extends Command
 {
+
     protected $signature = 'tasks:check-overdue';
 
     protected $description = 'Check for overdue tasks and log them into activity_logs';
@@ -24,7 +25,7 @@ class CheckOverdueTasks extends Command
 
         if ($overdueTasks->isEmpty()) {
             $this->info('Tidak ada task yang telat ditemukan. Kerja bagus!');
-            return 0; // Succes
+            return self::SUCCESS; 
         }
 
         $this->info("Ditemukan {$overdueTasks->count()} task yang telat. Mencatat ke log...");
@@ -32,7 +33,7 @@ class CheckOverdueTasks extends Command
         $systemUser = User::where('role', 'admin')->first();
         if (!$systemUser) {
             $this->error('Tidak ada user admin untuk mencatat log. Aksi dibatalkan.');
-            return 1;
+            return self::FAILURE; 
         }
 
         foreach ($overdueTasks as $task) {
@@ -45,6 +46,6 @@ class CheckOverdueTasks extends Command
         }
 
         $this->info('Selesai mencatat semua task yang telat.');
-        return 0;
+        return self::SUCCESS;
     }
 }

@@ -33,7 +33,7 @@ class TaskTest extends TestCase
         $taskData = [
             'title' => 'Siapkan Laporan Bulanan',
             'description' => 'Tolong siapkan laporan penjualan untuk bulan Juni.',
-            'assigned_to' => $this->staff->id, 
+            'assigned_to' => $this->staff->id, // Tugaskan ke staff
             'due_date' => now()->addDays(5)->format('Y-m-d'),
             'status' => 'pending',
         ];
