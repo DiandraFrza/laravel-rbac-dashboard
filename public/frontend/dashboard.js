@@ -17,12 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.getElementById('user-greeting').textContent = `Halo, ${user.name}!`;
   if (user.role === 'admin') {
-    document.getElementById('dashboard-title').textContent = 'All Tasks';
-
-    // Tombol Admin Page di navbar jika role-nya admin
-    const adminButton = `<a href="admin.html" class="btn btn-outline-success btn-sm me-2"><i class="bi bi-person-gear"></i> Admin Page</a>`;
-    document.getElementById('logout-button').insertAdjacentHTML('beforebegin', adminButton);
-}
+      document.getElementById('dashboard-title').textContent = 'All Tasks';
+      const adminButton = `<a href="admin.html" class="btn btn-outline-success btn-sm me-2"><i class="bi bi-person-gear"></i> Admin Page</a>`;
+      document.getElementById('logout-button').insertAdjacentHTML('beforebegin', adminButton);
+  }
 
   const taskList = document.getElementById('task-list');
   const taskModalEl = document.getElementById('taskModal');
@@ -38,7 +36,11 @@ document.addEventListener('DOMContentLoaded', function() {
   async function fetchAndRenderTasks() {
       try {
           const response = await fetch('/api/tasks', { headers });
-          if (response.status === 401) window.location.href = 'index.html';
+          if (response.status === 401) {
+              alert('Sesi Anda telah habis, silakan login kembali.');
+              logout();
+              return;
+          }
           if (!response.ok) throw new Error('Gagal mengambil data task');
           
           const tasks = await response.json();
@@ -93,7 +95,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   async function populateUsersDropdown() {
-      if (user.role !== 'admin' && user.role !== 'manager') return;
+      if (user.role !== 'admin' && user.role !== 'manager') {
+          userDropdown.innerHTML = `<option value="${user.id}" selected>${user.name} (self)</option>`;
+          return;
+      }
       try {
           const response = await fetch('/api/users', { headers });
           if (!response.ok) throw new Error('Gagal mengambil data user');
@@ -114,10 +119,12 @@ document.addEventListener('DOMContentLoaded', function() {
   // EVENT LISTENERS (TOMBOL, FORM, DLL)
   // =================================================================
 
-  document.getElementById('logout-button').addEventListener('click', () => {
+  function logout() {
       localStorage.clear();
       window.location.href = 'index.html';
-  });
+  }
+
+  document.getElementById('logout-button').addEventListener('click', logout);
   
   document.getElementById('create-task-btn').addEventListener('click', () => {
       document.getElementById('taskModalLabel').textContent = 'Create New Task';
@@ -130,10 +137,16 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('saveTaskButton').addEventListener('click', async () => {
       const taskId = document.getElementById('taskId').value;
       const url = taskId ? `/api/tasks/${taskId}` : '/api/tasks';
+      const method = taskId ? 'PUT' : 'POST';
+
+      const formData = new FormData();
+      formData.append('title', document.getElementById('title').value);
+      formData.append('description', document.getElementById('description').value);
+      formData.append('due_date', document.getElementById('due_date').value);
+      formData.append('status', document.getElementById('status').value);
+      formData.append('assigned_to', document.getElementById('assigned_to').value);
       
-      const formData = new FormData(taskForm);
-      
-      if (taskId) {
+      if (method === 'PUT') {
           formData.append('_method', 'PUT');
       }
 
@@ -145,12 +158,16 @@ document.addEventListener('DOMContentLoaded', function() {
           });
 
           const result = await response.json();
+
           if (!response.ok) {
-              let errorText = 'Gagal menyimpan:';
-              for (const key in result.errors) {
-                  errorText += `\n- ${result.errors[key][0]}`;
+              let errorText = result.message || 'Gagal menyimpan.';
+              if(result.errors) {
+                  errorText = '<strong>Gagal menyimpan:</strong>';
+                  for (const key in result.errors) {
+                      errorText += `<br>- ${result.errors[key][0]}`;
+                  }
               }
-              modalErrorDiv.textContent = errorText;
+              modalErrorDiv.innerHTML = errorText;
               modalErrorDiv.classList.remove('d-none');
               throw new Error('Validation failed');
           }
@@ -159,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
           fetchAndRenderTasks();
       } catch (error) {
           console.error('Error saving task:', error);
+          // Error sudah ditampilkan di modal, jadi tidak perlu alert
       }
   });
 
@@ -209,5 +227,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
   });
 
+  // Panggil fungsi utama untuk pertama kali
   fetchAndRenderTasks();
 });

@@ -23,7 +23,7 @@ class TaskController extends Controller
         $query = Task::with(['creator', 'assignee']);
 
         if ($user->role === 'admin') {
-            
+
         } 
         else {
             $query->where('created_by', $user->id)
@@ -55,11 +55,16 @@ class TaskController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        if ($user->role === 'manager') {
-            $assignee = User::find($request->assigned_to);
-            if (!$assignee || $assignee->role !== 'staff') {
-                return response()->json(['assigned_to' => ['Manager can only assign tasks to staff.']], 422);
-            }
+        $assignee = User::find($request->assigned_to);
+
+        // Jika manager, hanya bisa assign ke staff
+        if ($user->role === 'manager' && (!$assignee || $assignee->role !== 'staff')) {
+            return response()->json(['errors' => ['assigned_to' => ['Manager can only assign tasks to staff.']]], 422);
+        }
+
+        // Jika staff, hanya bisa assign ke diri sendiri
+        if ($user->role === 'staff' && $user->id !== $assignee->id) {
+            return response()->json(['errors' => ['assigned_to' => ['Staff can only assign tasks to themselves.']]], 422);
         }
         
         $data = $validator->validated();
