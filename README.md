@@ -20,15 +20,25 @@ Sebuah proyek RESTful API berbasis **Laravel 12** dengan implementasi **Role-Bas
 
 ```bash
 git clone https://github.com/DiandraFrza/laravel-rbac-dashboard.git
+```
+```bash
 cd laravel-rbac-dashboard
-
+```
+```bash
 composer install
+```
+```bash
 cp .env.example .env
+```
+```bash
 php artisan key:generate
+```
 
 # Konfigurasi .env (DB, Mail, dll)
-
+``bash
 php artisan migrate --seed
+```
+```bash
 php artisan serve
 ```
 
